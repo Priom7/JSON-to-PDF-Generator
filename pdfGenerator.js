@@ -12,8 +12,8 @@ const CONFIG = {
     left: 40,
     right: 40
   },
-  columns: 2,
-  columnGap: 20,
+  columns: 2, // Set to 2 columns
+  columnGap: 20, // Gap between the two columns
   fonts: {
     regular: 'Helvetica',
     bold: 'Helvetica-Bold',
@@ -138,51 +138,57 @@ function generateQuestions(doc, questions) {
   // Calculate column width
   const pageWidth = doc.page.width - CONFIG.margin.left - CONFIG.margin.right;
   const columnWidth = (pageWidth - CONFIG.columnGap) / CONFIG.columns;
-  
+
   let currentX = CONFIG.margin.left;
   let currentY = doc.y;
-  let columnHeight = doc.page.height - currentY - CONFIG.margin.bottom;
+  let columnHeight = doc.page.height - CONFIG.margin.top - CONFIG.margin.bottom;
   let currentColumn = 0;
+
+  // Draw a vertical bar between the two columns
+  const barX = CONFIG.margin.left + columnWidth + CONFIG.columnGap / 2;
+  doc.moveTo(barX, CONFIG.margin.top + 50)
+     .lineTo(barX, doc.page.height - CONFIG.margin.bottom)
+     .stroke();
 
   // Process each question and position in columns
   questions.forEach((question, index) => {
     // Save position before writing content to check height
     const startY = currentY;
-    
+
     // Write question number and text
     doc.font(CONFIG.fonts.bold)
        .fontSize(CONFIG.fontSize.normal)
        .text(`Q${index + 1}. `, currentX, currentY, { continued: true })
        .font(CONFIG.fonts.regular)
-       .text(question.text || '', { width: columnWidth });
-    
+       .text(question.text || '', { width: columnWidth, align: 'justify' });
+
     // If it's an MCQ, add options
     if (question.type === 'mcq' && question.options && Array.isArray(question.options)) {
       doc.moveDown(0.5);
-      
+
       question.options.forEach((option, optIndex) => {
         const optionLabel = String.fromCharCode(65 + optIndex); // A, B, C, D...
-        doc.text(`${optionLabel}) ${option}`, { indent: 15, width: columnWidth - 15 });
+        doc.text(`${optionLabel}) ${option}`, { indent: 15, width: columnWidth - 15, align: 'justify' });
       });
     }
-    
+
     // Add a bit of space after each question
     doc.moveDown(0.8);
-    
+
     // Calculate how much vertical space the question took
     const endY = doc.y;
     const questionHeight = endY - startY;
-    
+
     // Update current Y position
     currentY = endY;
-    
+
     // Check if we need to move to next column or page
-    if (currentY + 70 > doc.page.height - CONFIG.margin.bottom) { // 70 is buffer for next question
+    if (currentY + 70 > CONFIG.margin.top + columnHeight) { // 70 is buffer for next question
       // If we're in the first column, move to second column
       if (currentColumn === 0) {
         currentColumn = 1;
         currentX = CONFIG.margin.left + columnWidth + CONFIG.columnGap;
-        currentY = CONFIG.margin.top + 70; // Start from top of second column with a bit of buffer
+        currentY = CONFIG.margin.top; // Start from top of second column
         doc.x = currentX;
         doc.y = currentY;
       } else {
@@ -190,11 +196,23 @@ function generateQuestions(doc, questions) {
         doc.addPage();
         currentColumn = 0;
         currentX = CONFIG.margin.left;
-        currentY = CONFIG.margin.top + 50; // Start from top of first column with a bit of buffer
+        currentY = CONFIG.margin.top; // Start from top of first column
+
+        // Redraw the vertical bar on the new page
+        const newBarX = CONFIG.margin.left + columnWidth + CONFIG.columnGap / 2;
+        doc.moveTo(newBarX, CONFIG.margin.top)
+           .lineTo(newBarX, doc.page.height - CONFIG.margin.bottom)
+           .stroke();
+
         doc.x = currentX;
         doc.y = currentY;
       }
     }
+
+    // // Ensure the current column's content does not overflow into the next column
+    // if (currentColumn === 1 && currentX < CONFIG.margin.left + columnWidth + CONFIG.columnGap) {
+    //   currentX = CONFIG.margin.left + columnWidth + CONFIG.columnGap;
+    // }
   });
 }
 
