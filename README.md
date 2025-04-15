@@ -26,8 +26,8 @@ A lightweight, browserless REST API that generates print-ready PDF question pape
 ### 📦 Installation
 
 ```bash
-git clone https://github.com/yourusername/custom-pdf-generator.git
-cd custom-pdf-generator
+git clone https://github.com/Priom7/JSON-to-PDF-Generator.git
+cd JSON-to-PDF-Generator
 
 # Install dependencies
 npm install
