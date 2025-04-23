@@ -15,6 +15,8 @@ A lightweight, browserless REST API that generates print-ready PDF question pape
 - 🖼️ Supports images, formulas (SVG), and custom logos/fonts
 
 ---
+<img src="https://github.com/Priom7/JSON-to-PDF-Generator/blob/main/sample-output.png" alt="JSON to PDF Generator" width="100%" height="auto">
+---
 
 ## 🛠️ Setup Instructions
 
