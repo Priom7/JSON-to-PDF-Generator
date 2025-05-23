@@ -1,4 +1,4 @@
-# 📄 Custom PDF Generator for Question Papers
+# 📄 Custom PDF Generator for Question Papers ![npm](https://img.shields.io/npm/dt/@priom7/json2pdf)
 
 A lightweight, browserless REST API that generates print-ready PDF question papers from structured JSON data using **PDFKit** — ideal for educational platforms that require professional formatting without the overhead of headless browsers like Puppeteer.
 
